@@ -1,0 +1,15 @@
+cat > .gitignore << 'EOF'
+# segredos
+.env
+
+# dependências e builds
+node_modules/
+dist/
+build/
+
+# editores e sistema
+.idea/
+.vscode/
+.DS_Store
+*.log
+EOF
