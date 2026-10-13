@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # [US01] - Cadastro de usuário
 
 Tela de cadastro de usuário.
