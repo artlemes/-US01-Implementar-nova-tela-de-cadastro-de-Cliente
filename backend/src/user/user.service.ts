@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository.js';
@@ -22,6 +22,10 @@ export class UserService {
     }
 
     async create(input: CreateUserInput): Promise<User> {
+        const alreadyExists = await this.repo.findOne({ where: { email: input.email } });
+        if (alreadyExists) {
+            throw new ConflictException('Email já cadastrado');
+        }
         const hash = await bcrypt.hash(input.password, 10);
         const user = this.repo.create({ ...input, password: hash });
         return this.repo.save(user);

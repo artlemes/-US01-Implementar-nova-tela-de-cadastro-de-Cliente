@@ -1,5 +1,7 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsEmail, MinLength } from 'class-validator';
+import { IsEmail, isString, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+
 
 @InputType()
 export class CreateUserInput {
@@ -9,6 +11,7 @@ export class CreateUserInput {
 
   @Field()
   @IsEmail()
+  @Transform(({ value }) => isString(value) ? value.trim().toLowerCase() : value)
   email: string;
 
   @Field()
