@@ -7,11 +7,6 @@ import { CreateUserInput } from './create-user.input';
 export class UserResolver {
     
     constructor(private readonly userService: UserService) {}
-    
-    @Query(() => String)
-    hello(): string {
-        return this.userService.getHello();
-    }
 
     @Query(() => [User])
     users(): Promise<User[]> {
