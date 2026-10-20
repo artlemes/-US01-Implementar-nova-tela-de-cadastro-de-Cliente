@@ -10,18 +10,18 @@ export class User {
   id: number;
 
   @Field()
-  @Column()
+  @Column({ length: 100 })
   name: string;
 
   @Field()
-  @Column({ unique: true })
+  @Column({ unique: true, length: 250 })
   email: string;
 
   //Não tem o decorador @Field() no password, pois não queremos expor a senha no GraphQL
-  @Column()
+  @Column({ length: 255 })
   password: string;
 
   @Field()
-  @Column()
+  @Column({ length: 250 })
   endereco: string;
 }

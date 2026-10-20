@@ -25,6 +25,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _enderecoController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -44,6 +45,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _submit() async {
+    
+    if (!_formKey.currentState!.validate()) {
+      return;
+    };
+
     setState(() => _isLoading = true);
 
     final result = await graphQLClient.mutate(
@@ -107,151 +113,211 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 1,
-                  children: [
-                    // Texto inicial
-                    // Texto inicial
-                    const Column(
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+
+
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 1,
                     children: [
-                        Text(
-                        'CRIAR',
-                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, height: 1),
+                      // Texto inicial
+                      // Texto inicial
+                      const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          Text(
+                          'CRIAR',
+                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, height: 1),
+                          ),
+                          Text(
+                          'CONTA',
+                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, height: 1),
+                          ),
+                          SizedBox(height: 8),
+                          SizedBox(
+                          width: 50,
+                          height: 7,
+                          child: ColoredBox(color: Colors.black),
+                          ),
+                      ],
+                      ),
+
+                      // Nome
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        Text(
-                        'CONTA',
-                        style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, height: 1),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'NOME DE USUÁRIO',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(
+                                hintText: 'Ex: usuario123',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                final name = value?.trim() ?? '';
+
+                                if (name.isEmpty) {
+                                  return 'Nome de usuário é obrigatório';
+                                }
+
+                                if (name.length > 100) {
+                                  return 'Nome de usuário deve ter no máximo 100 caracteres';
+                                }
+
+                                return null;
+                              },
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 8),
-                        SizedBox(
-                        width: 50,
-                        height: 7,
-                        child: ColoredBox(color: Colors.black),
+                      ),
+
+                      // Email
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
                         ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'E - MAIL',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              decoration: const InputDecoration(
+                                hintText: 'nome@exemplo.com.br',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                final email = value?.trim() ?? '';
+
+                                if (email.isEmpty ||
+                                    !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                                        .hasMatch(email)) {
+                                  return 'E-mail inválido';
+                                }
+
+                                if (email.length > 250) {
+                                  return 'E-mail deve ter no máximo 250 caracteres';
+                                }
+
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Senha
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'SENHA',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                hintText: '******',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                final senha = value ?? '';
+
+                                if (senha.length < 6) {
+                                  return 'Senha deve ter pelo menos 6 caracteres';
+                                }
+
+                                if (senha.length > 50) {
+                                  return 'Senha deve ter no máximo 50 caracteres';
+                                }
+
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Endereço
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'ENDEREÇO',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextFormField(
+                              controller: _enderecoController,
+                              maxLines: 4,
+                              decoration: const InputDecoration(
+                                hintText: 'Rua, Número, Complemento, Bairro',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                final endereco = value?.trim() ?? '';
+
+                                if (endereco.isEmpty) {
+                                  return 'Endereço é obrigatório';
+                                }
+
+                                if (endereco.length > 250) {
+                                  return 'Endereço deve ter no máximo 250 caracteres';
+                                }
+
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
-                    ),
-
-                    // Nome
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'NOME DE USUÁRIO',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _nameController,
-                            decoration: const InputDecoration(
-                              hintText: 'Ex: usuario123',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Email
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'E - MAIL',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              hintText: 'nome@exemplo.com.br',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Senha
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'SENHA',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              hintText: '******',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Endereço
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'ENDEREÇO',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _enderecoController,
-                            maxLines: 4,
-                            decoration: const InputDecoration(
-                              hintText: 'Rua, Número, Complemento, Bairro',
-                              hintStyle: TextStyle(color: Colors.grey),
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
