@@ -1,4 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
+import 'graphql_client.dart';
+
+
+const _createUserMutation = r'''
+mutation CreateUser($input: CreateUserInput!) {
+  createUser(input: $input) {
+    id
+    name
+    email
+  }
+}
+''';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -22,11 +35,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    debugPrint('nome: ${_nameController.text}');
-    debugPrint('email: ${_emailController.text}');
-    debugPrint('senha: ${_passwordController.text}');
-    debugPrint('endereço: ${_enderecoController.text}');
+  bool _isLoading = false;
+
+  void _showMessage(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(text)),
+    );
+  }
+
+  Future<void> _submit() async {
+    setState(() => _isLoading = true);
+
+    final result = await graphQLClient.mutate(
+      MutationOptions(
+        document: gql(_createUserMutation),
+        variables: {
+          'input': {
+            'name': _nameController.text,
+            'email': _emailController.text,
+            'password': _passwordController.text,
+            'endereco': _enderecoController.text,
+          },
+        },
+      ),
+    );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (result.hasException) {
+      final errors = result.exception?.graphqlErrors ?? [];
+      _showMessage(
+        errors.isNotEmpty
+            ? errors.first.message
+            : 'Não foi possível conectar ao servidor',
+      );
+      return;
+    }
+
+    _showMessage('Cadastro realizado com sucesso!');
+    _nameController.clear();
+    _emailController.clear();
+    _passwordController.clear();
+    _enderecoController.clear();
   }
 
   @override
@@ -222,14 +273,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ElevatedButton(
-                    onPressed: _submit,
+                    onPressed: _isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 48),
                       shape: const RoundedRectangleBorder(),
                     ),
-                    child: const Text('FINALIZAR CADASTRO'),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text('FINALIZAR CADASTRO'),
                   ),
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
