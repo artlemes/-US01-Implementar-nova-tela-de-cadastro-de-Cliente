@@ -112,6 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             // ─── Campos (área rolável) ────────────────────
             Expanded(
               child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
@@ -129,15 +130,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       children: [
                           Text(
                           'CRIAR',
-                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, height: 1),
+                          style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, height: 1),
                           ),
                           Text(
                           'CONTA',
-                          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, height: 1),
+                          style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, height: 1),
                           ),
                           SizedBox(height: 8),
                           SizedBox(
-                          width: 50,
+                          width: 45,
                           height: 7,
                           child: ColoredBox(color: Colors.black),
                           ),
@@ -167,6 +168,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 hintText: 'Ex: usuario123',
                                 hintStyle: TextStyle(color: Colors.grey),
                                 border: OutlineInputBorder(),
+                                helperText: ' ',
                               ),
                               validator: (value) {
                                 final name = value?.trim() ?? '';
@@ -210,6 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 hintText: 'nome@exemplo.com.br',
                                 hintStyle: TextStyle(color: Colors.grey),
                                 border: OutlineInputBorder(),
+                                helperText: ' ',
                               ),
                               validator: (value) {
                                 final email = value?.trim() ?? '';
@@ -255,6 +258,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 hintText: '******',
                                 hintStyle: TextStyle(color: Colors.grey),
                                 border: OutlineInputBorder(),
+                                helperText: ' ',
                               ),
                               validator: (value) {
                                 final senha = value ?? '';
@@ -293,11 +297,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: 12),
                             TextFormField(
                               controller: _enderecoController,
-                              maxLines: 4,
+                              maxLines: 3,
                               decoration: const InputDecoration(
                                 hintText: 'Rua, Número, Complemento, Bairro',
                                 hintStyle: TextStyle(color: Colors.grey),
                                 border: OutlineInputBorder(),
+                                helperText: ' ',
                               ),
                               validator: (value) {
                                 final endereco = value?.trim() ?? '';
